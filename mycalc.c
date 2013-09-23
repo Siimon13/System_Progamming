@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-//Does not work if you input *
+//Does not work when you input *
+
 //Echo
 void echo(int argc, char* argv[]){
      int i;
@@ -10,7 +11,7 @@ void echo(int argc, char* argv[]){
 }
 
 //strcpy function
-char* strcpy(char* d1,const char* c1){
+char* mystrcpy(char* d1,const char* c1){
   int cnter = 0;
   while(c1[cnter] != '\0'){
     d1[cnter] = c1[cnter];
@@ -21,7 +22,7 @@ char* strcpy(char* d1,const char* c1){
 }
 
 //strcat function
-char* strcat(char* d1,const char* c1){
+char* mystrcat(char* d1,const char* c1){
   int i = strlen(d1);
   while (c1[i] != '\0'){
     d1[i] = c1[i];
@@ -31,7 +32,7 @@ char* strcat(char* d1,const char* c1){
   return d1;
 }
 
-
+/*
 //Calcualtor, use atoi
 int myCalc(int argc, char* argv[]){
   int firstNum, sign, scdNum;
@@ -40,7 +41,7 @@ int myCalc(int argc, char* argv[]){
   chkscnd = strlen(argv[2]);
   
 }
-
+*/
 
 int main(int argc, char* argv[]){
   if(argc < 4){
@@ -87,6 +88,8 @@ int main(int argc, char* argv[]){
 
 int countDig(int n){
   int ans = 1;
+  if(n < 0)
+    ans = 2;
   while(n > 10){
     n = n/10;
     ans++;
