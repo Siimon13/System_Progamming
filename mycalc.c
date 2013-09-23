@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
+//Does not work if you input *
 //Echo
 void echo(int argc, char* argv[]){
      int i;
