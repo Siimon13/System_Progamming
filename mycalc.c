@@ -64,6 +64,16 @@ int main(int argc, char* argv[]){
     scndNum = atoi(argv[3]);
     c1 = countDig(firstNum);
     c2=  countDig(scndNum);
+    if(firstNum == 0 || scndNum == 0){
+     if(!checkInt(argv[3]) || !checkInt(argv[1])){
+          printf("Illegal Value. \n");
+          return;
+     }
+     else if(scndNum == 0){
+          printf("DIVIDE BY ZERO?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!");
+          return;
+     }
+    }
     if(c1 != chkfirst || c2 != chkscnd){
       printf("Illegal Value. \n");
       return;
@@ -89,6 +99,7 @@ int main(int argc, char* argv[]){
   
 }
 
+//Counts the number of Digits in an integer
 int countDig(int n){
   int ans = 1;
   if(n < 0)
@@ -98,4 +109,36 @@ int countDig(int n){
     ans++;
   }
   return ans;
+}
+
+//Returns 0 if it is not an integer, 1 if it is
+int checkInt(char* c){
+     int ans = 1, n = 0, lim;
+     lim = strlen(c);
+     while(n < lim){
+          if(strcmp(c[n], "1") == 0)
+               n++;
+          else if(strcmp(c[n], "2") == 0)
+               n++;
+          else if(strcmp(c[n], "3") == 0)
+               n++;
+          else if(strcmp(c[n], "4") == 0)
+               n++;
+          else if(strcmp(c[n], "5") == 0)
+               n++;
+          else if(strcmp(c[n], "6") == 0)
+               n++;
+          else if(strcmp(c[n], "7") == 0)
+               n++;
+          else if(strcmp(c[n], "8") == 0)
+               n++;
+          else if(strcmp(c[n], "9") == 0)
+               n++;
+          else if(strcmp(c[n], "0") == 0)
+               n++;
+          else{
+               ans = 0;
+               break;
+          }
+     }
 }
