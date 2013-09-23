@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 //Does not work when you input *
-
+//Does not return an error if an char
+//Use \* for multiplication
 //Echo
 void echo(int argc, char* argv[]){
      int i;
