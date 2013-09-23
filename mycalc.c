@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-//Does not work when you input *
+//Does not work when you input *, Use \* for multiplication
 //Does not return an error if an char
-//Use \* for multiplication
+//Need to add /0 exception and return an error if characters are in my input.
+
+
 //Echo
 void echo(int argc, char* argv[]){
      int i;
