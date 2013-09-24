@@ -1,9 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-//Does not work when you input *, Use \* for multiplication
-//Does not return an error if an char
-//Need to add /0 exception and return an error if characters are in my input.
-
 
 //Echo
 void echo(int argc, char* argv[]){
@@ -47,6 +43,7 @@ int myCalc(int argc, char* argv[]){
 */
 
 int main(int argc, char* argv[]){
+  printf("MAJOR KUDOS TO JING LIN!!!!!!!!!!");
   if(argc < 4){
     printf("Add more STUFF! \n");
     return;
@@ -65,15 +62,15 @@ int main(int argc, char* argv[]){
     c1 = countDig(firstNum);
     c2=  countDig(scndNum);
     if(firstNum == 0 || scndNum == 0){
-     if(!checkInt(argv[3]) || !checkInt(argv[1])){
-          printf("Illegal Value. \n");
-          return;
-     }
-     else if(scndNum == 0){
-          printf("DIVIDE BY ZERO?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!");
-          return;
-     }
-    }
+      if(!checkInt(argv[1]) || !checkInt(argv[3])){
+	printf("Invalid Value. \n");
+	return;
+      }
+      else if(scndNum == 0){
+	printf("DIVIDE BY ZERO?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!");
+       return;
+      }
+    } 
     if(c1 != chkfirst || c2 != chkscnd){
       printf("Illegal Value. \n");
       return;
@@ -92,6 +89,7 @@ int main(int argc, char* argv[]){
     }
     else{
       printf("Input a Valid Operation \n");
+      return;
     }
     printf("The answer is: %d \n", ans);
     return ans;
@@ -99,7 +97,6 @@ int main(int argc, char* argv[]){
   
 }
 
-//Counts the number of Digits in an integer
 int countDig(int n){
   int ans = 1;
   if(n < 0)
@@ -111,34 +108,40 @@ int countDig(int n){
   return ans;
 }
 
+
 //Returns 0 if it is not an integer, 1 if it is
-int checkInt(char* c){
+int checkInt(const char* c){
      int ans = 1, n = 0, lim;
      lim = strlen(c);
      while(n < lim){
-          if(strcmp(c[n], "1") == 0)
-               n++;
-          else if(strcmp(c[n], "2") == 0)
-               n++;
-          else if(strcmp(c[n], "3") == 0)
-               n++;
-          else if(strcmp(c[n], "4") == 0)
-               n++;
-          else if(strcmp(c[n], "5") == 0)
-               n++;
-          else if(strcmp(c[n], "6") == 0)
-               n++;
-          else if(strcmp(c[n], "7") == 0)
-               n++;
-          else if(strcmp(c[n], "8") == 0)
-               n++;
-          else if(strcmp(c[n], "9") == 0)
-               n++;
-          else if(strcmp(c[n], "0") == 0)
-               n++;
-          else{
-               ans = 0;
-               break;
-          }
+       if(c[n] == 48)
+	 n++;
+       else if(c[n] == 49)
+	 n++;
+       else if(c[n] == 49)
+	  n++;
+	else if(c[n] == 50)
+	  n++;
+	else if(c[n] == 51)
+	  n++;
+	else if(c[n] == 52)
+	  n++;
+	else if(c[n] == 53)
+	  n++;
+	else if(c[n] == 54)
+	  n++;
+	else if(c[n] == 55)
+	  n++;
+	else if(c[n] == 56)
+	  n++;
+	else if(c[n] == 57)
+	  n++;
+       else{
+	 ans = 0;
+	 break;
+       }
      }
+     return ans;
 }
+
+
