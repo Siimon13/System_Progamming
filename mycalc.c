@@ -45,16 +45,20 @@ int myCalc(int argc, char* argv[]){
 */
 
 int main(int argc, char* argv[]){
-  printf("MAJOR KUDOS TO JING LIN!!!!!!!!!!");
+  printf("MAJOR KUDOS TO JING LIN!!!!!!!!!! \n");
   char tst[10];
   char tst2[7] = " there";
-  printf("Testing mystrcpy...");
+  printf("Testing mystrcpy... \n");
   mystrcpy(tst, "hi");
-  printf("Inputting 'hi' into tst char: %s". tst);
-  printf("Testing mystrcat...");
-  printf("Tst2 continas ' there'");
+  printf("Inputting 'hi' into tst char: %s \n", tst);
+  printf("Testing mystrcat... \n");
+  printf("Tst2 continas ' there' \n");
   mystrcat(tst, tst2);
-  printf("Inputting tst2 into tst1: %s", tst1);
+  printf("Inputting tst2 into tst1: %s \n", tst);
+  printf("==================================== \n");
+  printf("==================================== \n");
+  printf("==================================== \n");
+  printf("Onto the mycalc \n");
   if(argc < 4){
     printf("Add more STUFF! \n");
     return;
@@ -74,12 +78,12 @@ int main(int argc, char* argv[]){
     c2=  countDig(scndNum);
     if(firstNum == 0 || scndNum == 0){
       if(!checkInt(argv[1]) || !checkInt(argv[3])){
-	printf("Invalid Value. \n");
+	printf("Invalid Value. Please use a proper value \n");
 	return;
       }
     } 
     if(c1 != chkfirst || c2 != chkscnd){
-      printf("Illegal Value. \n");
+      printf("Illegal Value.Please use a proper value \n");
       return;
     }
     if(strcmp(argv[2], "+") == 0){
@@ -93,7 +97,7 @@ int main(int argc, char* argv[]){
     }
     else if(strcmp(argv[2], "/") == 0){
       if(scndNum == 0){
-      printf("DIVIDE BY ZERO?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!");
+      printf("DIVIDE BY ZERO?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?! Don't try that. \n");
       return;
       }
       ans = firstNum / scndNum;
