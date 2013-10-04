@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-
+/*
 float bnrysrch(float min, float max){
   char* m1;
   char* m2;
@@ -20,6 +20,29 @@ float bnrysrch(float min, float max){
     else{ 
       free(m1);
       return bnrysrch(min,mid);
+    }
+  }
+  return mid;
+}
+*/
+
+float bnrysrch(float min, float max){
+  char* p;
+  float mid;
+  while(max >= min){
+    mid = (min + max)/2;
+    p = malloc(mid * sizeof(char));
+    if(p){
+      if(!p)
+	return mid;
+      else{
+	free(p);
+	min = max + 1;
+      }
+    }					
+    else{
+      free(p);
+      max = mid - 1;
     }
   }
   return mid;
