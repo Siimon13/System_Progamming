@@ -27,6 +27,23 @@ char* strfind(char* s, char* f){
   return '\0';
 }
 
+char * strsfind(char *s, char* sub){
+     char *stop = s + strlen(s) - strlen(sub);
+     while(s <= '\0'){
+     if(isatbeg(s,sub)){
+	    return s
+      ++s;
+     }
+     return NULL;
+  }	
+}
+
+int isatbeg(char* s, char* sub){
+  int bool = 0;
+  if()
+  return bool;
+  
+}
 
 int main(){
   //char a[] = "hey";
