@@ -1,0 +1,7 @@
+This is the game of battleship. 
+Controls:
+F3- brings you to field, so you can move around
+Enter- brings you to command prmopt where you position your ships
+F5- Close
+
+The computer randomly chooses coordinates on the field and puts 3 ships on he field. A destoryer(2x1), a crusier(3x1), and a tanker(5x1). Your goal is to find and destory them all, before they destory all your ships. The coordinates you placed for the ship can only be vertical and horoziontal. They must be realtive to each other. 
