@@ -1,11 +1,29 @@
 //Through the Blood and Sweat of Simon Chen and Hanson Lin 
 
+#include <stdlib.h>
+#include <time.h>
 #include <stdio.h>
 #include <string.h>
-#include "keyboard.h"                                                           
-#include "xterm_control.h"                                                                                                                                
+#include "keyboard.h"                                                          
+#include "xterm_control.h"
+
 #define CONTROL_C                                                               
-   
+//checks if somehting is hited   
+int isHit(char* buf, char* oppL){
+  int boolean = 0, tmp = 0;;  
+  while(tmp < strlen(oppL)){
+    if(oppL[tmp] == buf[0]){
+      if(oppL[tmp+1] == buf[1]){
+	boolean = 1;
+	break;
+      }
+    }
+    tmp = tmp + 2;
+  }
+  return boolean;
+}
+
+//checks if something is used
 int checkUsed(char* buf, char* usedL){
   int boolean = 1, tmp = 0;;  
   while(tmp < strlen(usedL)){
@@ -19,6 +37,26 @@ int checkUsed(char* buf, char* usedL){
   }
   return boolean;
 }
+
+
+//checks if something is used
+int checkOL(char* buf, char* OL){
+  int boolean = 1, tmp = 0;;  
+  while(tmp < strlen(OL)){
+    if(OL[tmp] == buf[0]){
+      if(OL[tmp+1] == buf[1]){
+	boolean = 0;
+	break;
+      }
+    }
+    tmp = tmp + 2;
+  }
+  return boolean;
+}
+
+
+
+//checks the enter for mistakes
 int checkEnter(char* buf,char* usedL,int b){
   int boolean = 0;
   if(b){
@@ -46,29 +84,203 @@ int checkEnter(char* buf,char* usedL,int b){
     }
   }
   return boolean;
-}                                                                            
+}     
+
+//RNGer
+int RNG(int n){
+  srand(time(NULL));
+  int randi = rand() % n;
+  return randi;
+}                                                                       
+
 
 void main(int argv, char* arg[]) {                                              
   FILE *fp;                                                                     
-  int c, row, col, i = 0,tcol = 60, trow = 3,l = 0,startgame = 1, gameover = 0, pi = 0, oi = 0, boolean = 0;                                                           
+  //Int for stuff, i = index, startgame is for setting pieces, gameover, hit, destoryed for game over condition, ol, l = list counters, i and oi playercoord indexes
+  int c, row, col, i = 0,tcol = 60, trow = 3,l = 0,startgame = 1, gameover = 0, pi = 0, oi = 0, boolean = 1, hit = 0, destoryed = 0, ol = 0;                                       
+  //The reader
   char ch;
  
+  //The everything buffer
   char buffer[3];
 
+  //Tmp holder for looping tankers and w/e
   char tmp[3];
 
+  //List of points you hit
   char list[98];
 
+  //List of opponent's points they've hit already
+  char Olist[98];
+
+  //Initizalized list for coordinates
   char playercoord[20], oppcoord[20];
   playercoord[0] = '\0';
   oppcoord[0] = '\0';
   
-  char* divider = "=======================================================================";
+  //Infinite loop catcher
+  int checker = 0;
+
+  
+  /*Failed random opponent maker
+  while (i < 3 && checker < 10){
+    checker++;
+    char buf[2];
+    int tmp = 0;
+    srand(time(NULL));
+    int randi = rand() % 8;
+    buf[0] = 'B' + randi;
+    srand(time(NULL));
+    randi = rand() % 7;
+    buf[0] = '2' + randi;
+    while(tmp < strlen(oppcoord)){
+      if(oppcoord[tmp] == buf[0]){
+	if(oppcoord[tmp+1] == buf[1]){
+	  boolean = 0;
+	  break;
+	}
+      }
+      tmp = tmp + 2;
+    }
+    if(boolean){
+      if(i == 0){
+	randi = rand() % 2;
+	oppcoord[oi++] = buf[0];
+	oppcoord[oi++] = buf[1];
+	oppcoord[oi] = '\0';
+	i++;
+	if (randi == 0){
+	  oppcoord[oi++] = buf[0]++;
+	  oppcoord[oi++] = buf[1];
+	  oppcoord[oi] = '\0';
+	  i++;
+	}
+	else{
+	  oppcoord[oi++] = buf[0];
+	  oppcoord[oi++] = buf[1]++;
+	  oppcoord[oi] = '\0';
+	  i++;
+	}
+      }
+      else if(i == 1){
+	randi = rand() % 2;
+	oppcoord[oi++] = buf[0];
+	oppcoord[oi++] = buf[1];
+	oppcoord[oi] = '\0';
+	i++;
+	if (randi == 0){
+	  int c = 0;
+	  while(c < 2){
+	    buf[0]++;
+	    if(checkUsed(buf,oppcoord)){
+	      oppcoord[oi++] = buf[0];
+	      oppcoord[oi++] = buf[1];
+	      oppcoord[oi] = '\0';
+	      c++;
+	    }
+	    else{
+	      buf[0]-=2;
+	    }
+	  }
+	}
+      }
+      else{
+	while(1){
+	  int c = 0;
+	  randi = rand() % 4;
+	  if(randi == 0){
+	    buffer[0] = 'A';
+	    buffer[1] = '1';
+	    while(c < 4){
+	      oppcoord[oi++] = buf[0];
+	      oppcoord[oi++] = buf[1]++;
+	      oppcoord[oi] = '\0';
+	      c++;
+	    }
+	    if(c <= 4){
+	      i++;
+	      break;
+	    }
+	  }
+	  else if(randi == 1){
+	    buffer[0] = 'A';
+	    buffer[1] = '7';
+	    while(c < 4){
+	      oppcoord[oi++] = buf[0];
+	      oppcoord[oi++] = buf[1]++;
+	      oppcoord[oi] = '\0';
+	      c++;
+	    }
+	    if(c <= 4){
+	      i++;
+	      break;
+	    }
+	  }
+	  else if(randi == 2){
+	    buffer[0] = 'H';
+	    buffer[1] = '1';
+	    while(c < 4){
+	      oppcoord[oi++] = buf[0];
+	      oppcoord[oi++] = buf[1]++;
+	      oppcoord[oi] = '\0';
+	      c++;
+	    }
+	    if(c <= 4){
+	      i++;
+	      break;
+	    }
+	  }
+	  else{
+	    buffer[0] = 'H';
+	    buffer[1] = '7';
+	    while(c < 4){
+	      oppcoord[oi++] = buf[0];
+	      oppcoord[oi++] = buf[1]++;
+	      oppcoord[oi] = '\0';
+	      c++;
+	    }
+	    if(c <= 4){
+	      i++;
+	      break;
+	    }
+	  }
+	}
+      }
+    }
+  }
+  */
+
+  //Coordinates of enemy ships
+  oppcoord[oi++] = 'F';
+  oppcoord[oi++] = '1';
+  oppcoord[oi++] = 'F';
+  oppcoord[oi++] = '2';
+  oppcoord[oi++] = 'D';
+  oppcoord[oi++] = '3';
+  oppcoord[oi++] = 'D';
+  oppcoord[oi++] = '4';
+  oppcoord[oi++] = 'D';
+  oppcoord[oi++] = '5';
+  oppcoord[oi++] = 'A';
+  oppcoord[oi++] = '1';
+  oppcoord[oi++] = 'A';
+  oppcoord[oi++] = '2';
+  oppcoord[oi++] = 'A';
+  oppcoord[oi++] = '3';
+  oppcoord[oi++] = 'A';
+  oppcoord[oi++] = '4';
+  oppcoord[oi++] = 'A';
+  oppcoord[oi++] = '5';
+  oppcoord[oi] = '\0';
+  boolean = 0;
+  i = 0;
+  
+  char* divider = "======================================================================";
   
   char* chk = arg[1];
 
-  if(argv == 2){        
-    if(fp = fopen(arg[1], "r"));
+  if(argv == 1){        
+    if(fp = fopen("field", "r"));
     else
       fp = fopen(arg[1], "w"); 
                   
@@ -107,6 +319,19 @@ void main(int argv, char* arg[]) {
 	printf("Game over! \n");
 	break;
       }
+      else if(checker >=10){
+	break;
+      }
+      else if (hit >= 10){
+	printf("Game over! \n");
+	break;
+      }
+      else if(c == KEY_F4){
+	//Supposed to print out coords of enemies
+	xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
+	printf("%c",oppcoord[0]);
+	xt_par2(XT_SET_ROW_COL_POS,row = 3,col=8);
+      }
       else if (c == KEY_UP && row > 0 && row < 22){
 	row = row - 3;
 	xt_par2(XT_SET_ROW_COL_POS,row,col);
@@ -139,8 +364,9 @@ void main(int argv, char* arg[]) {
 	    list[l++] = buffer[0];
 	    list[l++] = buffer[1];
 	    list[l] = '\0';
+	    //Starts game, sets coordinates
 	    xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
-	    if(!boolean){
+	    if(!boolean && startgame){
 	      if(strlen(playercoord)+2 <= 4)
 		printf("Please enter coords for a destoryers(2x1");
 	      else if(strlen(playercoord)+2 >= 4 && strlen(playercoord)+2 < 10)
@@ -157,6 +383,7 @@ void main(int argv, char* arg[]) {
 	    if(startgame){
 	      if(strlen(playercoord) < 4){
 		if(!boolean){
+		  //sets up coordinates
 		  playercoord[pi++] = buffer[0];
 		  playercoord[pi++] = buffer[1];
 		  tmp[0] = buffer[0];
@@ -171,10 +398,13 @@ void main(int argv, char* arg[]) {
 		}
 		else{
 		  if(buffer[0] == 'u'){
+		    //puts something up to the start if nothing is there,everything repeats for tanker and carrier(u(p),d(own),l(eft),r(ight)
 		    tmp[1]--;
 		    if(tmp[1] >= '1' && checkUsed(tmp,list)){
 		      playercoord[pi++] = tmp[0];
 		      playercoord[pi++] = tmp[1];
+		      list[l++] = tmp[0];
+		      list[l++] = tmp[1];
 		      playercoord[pi] = '\0';
 		      col = 6*(tmp[0] - 'A') + 8;
 		      row = 3*(tmp[1] - '1') + 3;
@@ -185,6 +415,7 @@ void main(int argv, char* arg[]) {
 		      boolean = 0;
 		    }
 		    else{
+		      //Error catcher
 		      tmp[1]++;
 		      xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
 		      printf("Pick another direction, or use e to cancel");
@@ -195,6 +426,8 @@ void main(int argv, char* arg[]) {
 		    if(tmp[1] <= 'H' && checkUsed(tmp,list)){
 		      playercoord[pi++] = tmp[0];
 		      playercoord[pi++] = tmp[1];
+		      list[l++] = tmp[0];
+		      list[l++] = tmp[1];
 		      playercoord[pi] = '\0';
 		      col = 6*(tmp[0] - 'A') + 8;
 		      row = 3*(tmp[1] - '1') + 3;
@@ -216,6 +449,8 @@ void main(int argv, char* arg[]) {
 		    if(tmp[1] <= '7' && checkUsed(tmp,list)){
 		      playercoord[pi++] = tmp[0];
 		      playercoord[pi++] = tmp[1];
+		      list[l++] = tmp[0];
+		      list[l++] = tmp[1];
 		      playercoord[pi] = '\0';
 		      col = 6*(tmp[0] - 'A') + 8;
 		      row = 3*(tmp[1] - '1') + 3;
@@ -236,6 +471,8 @@ void main(int argv, char* arg[]) {
 		    if(tmp[0] >= 'A' && checkUsed(tmp,list)){
 		      playercoord[pi++] = tmp[0];
 		      playercoord[pi++] = tmp[1];
+		      list[l++] = tmp[0];
+		      list[l++] = tmp[1];
 		      playercoord[pi] = '\0';
 		      col = 6*(tmp[0] - 'A') + 8;
 		      row = 3*(tmp[1] - '1') + 3;
@@ -252,10 +489,11 @@ void main(int argv, char* arg[]) {
 		    }
 		  }  
 		  else if(buffer[0] == 'e'){
+		    //terminates the process and restarts the coordinates
 		    playercoord[--pi] = '\0';
 		    playercoord[--pi] = '\0';
-		    list[l--] = '\0';
-		    list[l--] = '\0';
+		    list[--l] = '\0';
+		    list[--l] = '\0';
 		    col = 6*(tmp[0] - 'A') + 8;
 		    row = 3*(tmp[1] - '1') + 3;
 		    xt_par2(XT_SET_ROW_COL_POS,row,col);
@@ -290,6 +528,8 @@ void main(int argv, char* arg[]) {
 			if(tmp[1] >= '1' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -305,8 +545,8 @@ void main(int argv, char* arg[]) {
 		      if(counter != 2){
 			playercoord[--pi] = '\0';
 			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
+			list[--l] = '\0';
+			list[--l] = '\0';
 			col = 6*(tmp[0] - 'A') + 8;
 			row = 3*(tmp[1] - '1') + 3;
 			xt_par2(XT_SET_ROW_COL_POS,row,col);
@@ -333,6 +573,8 @@ void main(int argv, char* arg[]) {
 			if(tmp[0] <= 'H' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -348,8 +590,8 @@ void main(int argv, char* arg[]) {
 		      if(counter != 2){
 			playercoord[--pi] = '\0';
 			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
+			list[--l] = '\0';
+			list[--l] = '\0';
 			col = 6*(tmp[0] - 'A') + 8;
 			row = 3*(tmp[1] - '1') + 3;
 			xt_par2(XT_SET_ROW_COL_POS,row,col);
@@ -376,6 +618,8 @@ void main(int argv, char* arg[]) {
 			if(tmp[1] <= '7' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -391,8 +635,8 @@ void main(int argv, char* arg[]) {
 		      if(counter != 2){
 			playercoord[--pi] = '\0';
 			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
+			list[--l] = '\0';
+			list[--l] = '\0';
 			col = 6*(tmp[0] - 'A') + 8;
 			row = 3*(tmp[1] - '1') + 3;
 			xt_par2(XT_SET_ROW_COL_POS,row,col);
@@ -419,6 +663,8 @@ void main(int argv, char* arg[]) {
 			if(tmp[0] >= 'A' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -434,8 +680,8 @@ void main(int argv, char* arg[]) {
 		      if(counter != 2){
 			playercoord[--pi] = '\0';
 			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
+			list[--l] = '\0';
+			list[--l] = '\0';
 			col = 6*(tmp[0] - 'A') + 8;
 			row = 3*(tmp[1] - '1') + 3;
 			xt_par2(XT_SET_ROW_COL_POS,row,col);
@@ -457,8 +703,8 @@ void main(int argv, char* arg[]) {
 		  else if(buffer[0] == 'e'){
 		    playercoord[--pi] = '\0';
 		    playercoord[--pi] = '\0';
-		    list[l--] = '\0';
-		    list[l--] = '\0';
+		    list[--l] = '\0';
+		    list[--l] = '\0';
 		    col = 6*(tmp[0] - 'A') + 8;
 		    row = 3*(tmp[1] - '1') + 3;
 		    xt_par2(XT_SET_ROW_COL_POS,row,col);
@@ -489,10 +735,12 @@ void main(int argv, char* arg[]) {
 		    tmp[1]--;
 		    int counter = 0;
 		    if(tmp[1] >= '1' && checkUsed(tmp,list)){
-		      while (counter < 5){
+		      while (counter < 4){
 			if(tmp[1] >= '1' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -505,21 +753,23 @@ void main(int argv, char* arg[]) {
 			else
 			  break;
 		      }
-		      if(counter != 5){
-			playercoord[--pi] = '\0';
-			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
-			col = 6*(tmp[0] - 'A') + 8;
-			row = 3*(tmp[1] - '1') + 3;
-			xt_par2(XT_SET_ROW_COL_POS,row,col);
-			putchar(' ');
-			xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
-			xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
-			printf("Please enter another direction.");
-			counter--;
-			tmp[1]++;
-			boolean = 1;
+		      if(counter < 3){
+			while(counter > 0){
+			  playercoord[--pi] = '\0';
+			  playercoord[--pi] = '\0';
+			  list[--l] = '\0';
+			  list[--l] = '\0';
+			  col = 6*(tmp[0] - 'A') + 8;
+			  row = 3*(tmp[1] - '1') + 3;
+			  xt_par2(XT_SET_ROW_COL_POS,row,col);
+			  putchar(' ');
+			  xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
+			  xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
+			  printf("Please enter another direction.");
+			  counter--;
+			  tmp[1]++;
+			  boolean = 1;
+			}
 		      }
 		    }
 		    else{
@@ -532,10 +782,12 @@ void main(int argv, char* arg[]) {
 		    int counter = 0;
 		    tmp[0]++;
 		    if(tmp[0] <= 'H' && checkUsed(tmp,list)){
-		      while (counter < 5){
+		      while (counter < 4){
 			if(tmp[0] <= 'H' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -548,21 +800,23 @@ void main(int argv, char* arg[]) {
 			else
 			  break;
 		      }
-		      if(counter != 5){
-			playercoord[--pi] = '\0';
-			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
-			col = 6*(tmp[0] - 'A') + 8;
-			row = 3*(tmp[1] - '1') + 3;
-			xt_par2(XT_SET_ROW_COL_POS,row,col);
-			putchar(' ');
-			xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
-			xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
-			printf("Please enter another direction.");
-			counter--;
-			tmp[0]--;
-			boolean = 1;
+		      if(counter < 3){
+			while(counter > 0){
+			  playercoord[--pi] = '\0';
+			  playercoord[--pi] = '\0';
+			  list[--l] = '\0';
+			  list[--l] = '\0';
+			  col = 6*(tmp[0] - 'A') + 8;
+			  row = 3*(tmp[1] - '1') + 3;
+			  xt_par2(XT_SET_ROW_COL_POS,row,col);
+			  putchar(' ');
+			  xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
+			  xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
+			  printf("Please enter another direction.");
+			  counter--;
+			  tmp[0]--;
+			  boolean = 1;
+			}
 		      }
 		    }
 		    else{
@@ -575,10 +829,12 @@ void main(int argv, char* arg[]) {
 		    int counter = 0;
 		    tmp[1]++;
 		    if(tmp[1] <= '7' && checkUsed(tmp,list)){
-		      while (counter < 5){
+		      while (counter < 4){
 			if(tmp[1] <= '7' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -591,21 +847,23 @@ void main(int argv, char* arg[]) {
 			else
 			  break;
 		      }
-		      if(counter != 5){
-			playercoord[--pi] = '\0';
-			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
-			col = 6*(tmp[0] - 'A') + 8;
-			row = 3*(tmp[1] - '1') + 3;
-			xt_par2(XT_SET_ROW_COL_POS,row,col);
-			putchar(' ');
-			xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
-			xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
-			printf("Please enter another direction.");
-			counter--;
-			tmp[1]--;
-			boolean = 1;
+		      if(counter < 3){
+			while(counter > 0){
+			  playercoord[--pi] = '\0';
+			  playercoord[--pi] = '\0';
+			  list[--l] = '\0';
+			  list[--l] = '\0';
+			  col = 6*(tmp[0] - 'A') + 8;
+			  row = 3*(tmp[1] - '1') + 3;
+			  xt_par2(XT_SET_ROW_COL_POS,row,col);
+			  putchar(' ');
+			  xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
+			  xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
+			  printf("Please enter another direction.");
+			  counter--;
+			  tmp[1]--;
+			  boolean = 1;
+			}
 		      }
 		    }
 		    else{
@@ -618,10 +876,12 @@ void main(int argv, char* arg[]) {
 		    int counter = 0;
 		    tmp[0]--;
 		    if(tmp[0] >= 'A' && checkUsed(tmp,list)){
-		      while (counter < 5){
+		      while (counter < 4){
 			if(tmp[0] >= 'A' && checkUsed(tmp,list)){
 			  playercoord[pi++] = tmp[0];
 			  playercoord[pi++] = tmp[1];
+			  list[l++] = tmp[0];
+			  list[l++] = tmp[1];
 			  playercoord[pi] = '\0';
 			  col = 6*(tmp[0] - 'A') + 8;
 			  row = 3*(tmp[1] - '1') + 3;
@@ -634,21 +894,23 @@ void main(int argv, char* arg[]) {
 			else
 			  break;
 		      }
-		      if(counter != 5){
-			playercoord[--pi] = '\0';
-			playercoord[--pi] = '\0';
-			list[l--] = '\0';
-			list[l--] = '\0';
-			col = 6*(tmp[0] - 'A') + 8;
-			row = 3*(tmp[1] - '1') + 3;
-			xt_par2(XT_SET_ROW_COL_POS,row,col);
-			putchar(' ');
-			xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
-			xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
-			printf("Please enter another direction.");
-			counter--;
-			tmp[0]++;
-			boolean = 1;
+		      if(counter < 3){
+			while(counter > 0){
+			  playercoord[--pi] = '\0';
+			  playercoord[--pi] = '\0';
+			  list[l--] = '\0';
+			  list[l--] = '\0';
+			  col = 6*(tmp[0] - 'A') + 8;
+			  row = 3*(tmp[1] - '1') + 3;
+			  xt_par2(XT_SET_ROW_COL_POS,row,col);
+			  putchar(' ');
+			  xt_par2(XT_SET_ROW_COL_POS,row = 23,col=1);
+			  xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
+			  printf("Please enter another direction.");
+			  counter--;
+			  tmp[0]++;
+			  boolean = 1;
+			}
 		      }
 		    }
 		    else{
@@ -674,6 +936,7 @@ void main(int argv, char* arg[]) {
 		}
 	      }
 	      else{
+		//turns game to false if playercoord is at 20 length
 		startgame = 0;
 		while(l >= 0){
 		  buffer[l--] = '\0';
@@ -682,17 +945,46 @@ void main(int argv, char* arg[]) {
 	      }
 	    }
 	    else{
+	      //Game process
+	      boolean = 0;
 	      xt_par2(XT_SET_ROW_COL_POS,row = 24,col=25);
 	      printf("Enter the coords to hit");
 	      xt_par2(XT_SET_ROW_COL_POS,trow++,tcol);
-	      printf("%s", buffer);
+	      if(isHit(buffer,oppcoord)){
+		printf("%s-H", buffer);
+		hit++;
+	      }
+	      else
+		printf("%s", buffer);
 	      list[l++] = buffer[0];
 	      list[l++] = buffer[1];
 	      xt_par2(XT_SET_ROW_COL_POS,row = 24,col=1);
 	      list[l] = '\0';
+	      //Enemy code
+	      srand (time(NULL));
+	      buffer[0] = 'A' + RNG(8);
+	      buffer[1] = '1' + RNG(7);
+	      while(!checkUsed(buffer,Olist)){
+		buffer[0] = 'A' + RNG(8);
+		buffer[1] = '1' + RNG(7);
+	      }
+	      Olist[ol++] = buffer[0];
+	      Olist[ol++] = buffer[1];
+	      Olist[ol] = '\0';
+	      col = 6*(buffer[0] - 'A') + 8;
+	      row = 3*(buffer[1] - '1') + 3;
+	      xt_par2(XT_SET_ROW_COL_POS,row,col);
+	      putchar('X');
+	      xt_par2(XT_SET_ROW_COL_POS,row = 24,col=60);
+	      if(isHit(buffer,playercoord)){
+		printf("You were hit at %s", buffer);
+		destoryed++;
+	      }
+	      xt_par2(XT_SET_ROW_COL_POS,row = 24,col=1);
 	    }
 	  }
 	  else{
+	    //If user enters wrong data
 	    xt_par2(XT_SET_ROW_COL_POS,row = 24,col=30);
 	    if(boolean)
 	      printf("Please enter a direction(u,r,d,l)");
@@ -701,17 +993,23 @@ void main(int argv, char* arg[]) {
 	    xt_par2(XT_SET_ROW_COL_POS,row = 24,col=1);
 	  }
 	  if (trow > 22){
+	    //restarts tries
 	    trow = 3;
-	    tcol = tcol + 3;
+	    tcol = tcol + 5;
 	  }
 	  while(i >= 0){
+	    //cleans buffer
 	    buffer[i] = '\0';
 	    i--;
 	  }
 	  i = 0;
 	  xt_par2(XT_SET_ROW_COL_POS,row = 24,col=1);
+	  if(destoryed >= 10){
+	    gameover = 1;
+	  }
 	}
 	else{
+	  //If you pressed enter into F3
 	  xt_par2(XT_SET_ROW_COL_POS,row = 24,col=1);
 	  xt_par1(XT_DELETE_LINES,row=24);
 	  xt_par1(XT_INSERT_LINES,row=24);
@@ -744,8 +1042,14 @@ void main(int argv, char* arg[]) {
     }
     printf("\n");
     getkey_terminate();
+    if(checker >= 10)
+      printf("Please Start again \n");
+    else if(hit >= 10)
+      printf("You win!");
+    else if(gameover)
+      printf("You lose! \n");
   }
   else
-    printf("Usage: mydemo field \n");      
+    printf("Usage: mydemo \n");      
       
 }
