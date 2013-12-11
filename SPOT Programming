@@ -1,0 +1,36 @@
+Exercise 1:
+write 8,C1
+write 4,C2
+
+MOD C1,C2,C3
+
+theCheck:
+JUMP-IF-EQ is-div, C3, 0
+SAY C2
+SAY " in C2 does not divide "
+SAY C1
+SAY " in C1 evenly."
+STOP
+
+is-div:
+SAY C2
+SAY " in C2 divides "
+SAY C1
+SAY " in C1 evenly."
+STOP
+
+Exercise 2:
+WRITE 3,C1
+WRITE 7,C2
+SUB C2,1,C3
+
+run:
+JUMP-IF-GE done,C1,C3
+SAY C1
+SAY ","
+INC C1
+JUMP run
+
+done:
+SAY C1
+STOP
