@@ -34,3 +34,36 @@ JUMP run
 done:
 SAY C1
 STOP
+
+write 10,C1
+write 2,C10
+
+main:
+write c1,c4
+gosub 3k-plus-1
+dec c1
+jump-if-lt stop,c1,c10
+jump main
+
+stop:
+stop
+
+#sub
+3k-plus-1:
+jump-if-eq is-1,c4,1
+say c4
+say " "
+mod c4,2,c3
+jump-if-eq even,c3,0
+mul c4,3,c4
+inc c4
+jump 3k-plus-1
+
+even:
+div c4,2,c4
+jump 3k-plus-1
+
+is-1:
+say c4
+say "\n"
+return
