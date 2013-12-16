@@ -122,10 +122,11 @@ struct Explorer EXP[] = {
   {1,1,XT_CH_CYAN,"----------------------------------Surfin--------------------------------------"},
   {2,1,XT_CH_WHITE,"Message:"},
   {4,1,XT_CH_WHITE,"Record Number:"},
-  {5,1,XT_CH_WHITE,"First Record Time:"},
-  {6,1,XT_CH_WHITE,"Subject:"},
-  {7,1,XT_CH_WHITE,"Body:"},
-  {9,1,XT_CH_WHITE,"You can use the arrow keys to navigate the items one by one.Press Enter to edit/enter the item. Alternatively, press F3 to use the search function below.  
+  {5,1,XT_CH_WHITE,"Current Location:"},
+  {6,1,XT_CH_WHITE,"First Record Time:"},
+  {7,1,XT_CH_WHITE,"Subject:"},
+  {8,1,XT_CH_WHITE,"Body:"},
+  {10,1,XT_CH_WHITE,"You can use the arrow keys to navigate the items one by one.Press Enter to edit/enter the item. Alternatively, press F3 to use the search function below.  
 When using the search function, use the arrow keys to navigate and edit and press Enter to search. Press F3 to navigate again."},
   {17,1,XT_CH_WHITE,"------------------------------------------------------------------------------"},
   {18,1,XT_CH_WHITE,"Number between:x - y"},
@@ -135,3 +136,28 @@ When using the search function, use the arrow keys to navigate and edit and pres
 
 int nEXP = sizeof(EXP)/sizeof(EXP[0]);
 
+struct EXPLORERPOSITION EXPP[] = {
+  {2,10,70,"message"},
+  {4,15,10,"recordnum"},
+  {5,10,20,"location"},  
+  {6,20,20,"firstrecord"},
+  {7,6,31,"subject"},
+  {8,6,74,"body"},
+  {18,16,1,"lowernum"},
+  {18,20,1,"highernum"},
+  {19,14,4,"lowyear"},
+  {19,19,2,"lowmonth"},
+  {19,22,2,"lowday"},
+  {19,27,4,"highyear"},
+  {19,32,2,"highmonth"},
+  {19,35,2,"highday"},
+  {20,18,31,"srchsubject"}
+};
+
+
+//-----------------------------------Main---------------------------------------
+void main(){
+
+
+
+}
