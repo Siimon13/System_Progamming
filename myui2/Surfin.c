@@ -1,6 +1,9 @@
 #include "myui2.h"
 struct NameValue = *nvs = NULL;
 int n_nvs = 0;
+
+char input[1000];
+char n_input=0;
 //-------------------------------------------------Menu----------------------
 
 struct MenuString MS[] = {
@@ -154,10 +157,67 @@ struct EXPLORERPOSITION EXPP[] = {
   {20,18,31,"srchsubject"}
 };
 
+int nitems = 0;
+char subject[31];
+char body[141];
+char msg[80] = "";
+struct DisplayString DS[];
+struct StringPosition PS[];
+int nDS;
+int isMenu = 1, isAdd, isEdit, isEXP, isAddE, iAddC; 
+//-----------------------------------Main------------------------------------
+int main(void){
+  int i,c;
+  fill(subject,30);
+  fill(body,140);
+  checkScreen();
+  xt_par0(XT_CLEAR_SCREEN);
 
-//-----------------------------------Main---------------------------------------
-void main(){
+  for (i = 0; i < nDS; ++i){
+    xt_par2(XT_SET_ROW_COL_POS,DS[i].row,DS[i].col);
+    xt_par0(XT_CH_DEFAULT);
+    xt_par0(DS[i].color);
+    printf("%s",DS[i].string);
+  }
+}
 
+// Mr.brooks--------------------------- fill --------------------------------
+void fill(char *s, int n) {
+	while (n--) *s++=' ';
+	*s='\0';
+}
 
-
+//-------------------------------------Checker-------------------------------
+int checkScreen(void){
+  if(isMenu){
+    DS = MS;
+    PS = MSP;
+    nDS = nMS;
+  }
+  else if(isAdd){
+    DS = AS;
+    PS = ASP;
+    nDS = nAS;
+  }
+  else if(isEdit){
+    DS = MS;
+    PS = MSP;
+    nDS = nMS;
+  }
+  else if(isEXP){
+    DS = MS;
+    PS = MSP;
+    nDS = nMS;
+  }
+  else if(isAddC){
+    DS = MS;
+    PS = MSP;
+    nDS = nMS;
+  } 
+  else{
+    DS = MS;
+    PS = MSP;
+    nDS = nMS;
+  }
+  return 1;
 }

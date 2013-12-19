@@ -43,8 +43,6 @@ struct StringPosition SP[] = {
 	{21,11,30,"edit-subject"},
 	{22,11,140,"edit-body"}
 };
-
-
 int nSP = sizeof(SP)/sizeof(SP[0]);
 
 int nitems = 0;
