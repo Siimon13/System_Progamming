@@ -6,111 +6,52 @@ int n_nvs = 0;
 char input[1000];
 int n_input=0;	// number of chars in the input, not including terminating NULL-byte
 
-struct TemplateString TS[] = {
-	{1,1,XT_CH_YELLOW,"-------------------------- Simple Mystore Front End  -------------------------"},
-	{3,34,XT_CH_YELLOW,"F9: exit"},
-	{4,1,XT_CH_CYAN,"Message:"},
-	{6,1,XT_CH_YELLOW,"--------------------------------- Status ------------------------------------"},
-	{7,1,XT_CH_CYAN,"Number of records:"},
-	{8,1,XT_CH_CYAN,"First record time:"},
-	{9,1,XT_CH_CYAN,"Last  record time:"},
-	{10,1,XT_CH_CYAN,"Author:"},
-	{11,1,XT_CH_CYAN,"Version:"},
-	{13,1,XT_CH_YELLOW,"-- DISPLAY keys: up-previous  down-next Home-first End-last  F6-DeleteRecord  -"},
-	{14,1,XT_CH_CYAN,"Record #:"},
-	{15,1,XT_CH_CYAN,"Time:"},
-	{16,1,XT_CH_CYAN,"Subject:"},
-	{17,1,XT_CH_CYAN,"Body:"},
-	{20,1,XT_CH_YELLOW,"-  EDIT keys:  backspace delete Enter-Subject<->Body  F3-Clear F1-AddRecord  --"},
-	{21,1,XT_CH_CYAN,"Subject: |"},
-	{21,41,XT_CH_CYAN,"|"},
-	{22,1,XT_CH_CYAN,"Body:    |"},
-	{23,62,XT_CH_CYAN,"|"}
+struct TemplateString MS[] = {
+ {1,1,XT_CH_CYAN,"----------------------------------Surfin--------------------------------------"},
+  {2,1,XT_CH_WHITE,"Message:"},
+  {4,1,XT_CH_YELLOW,"Status:"},
+  {5,1,XT_CH_WHITE,"Number of records:"},
+  {6,1,XT_CH_WHITE,"Author:"},
+  {7,1,XT_CH_WHITE,"Version:"},
+  {8,1,XT_CH_WHITE,"First record time:"},
+  {9,1,XT_CH_WHITE,"Last  record time:"},
+  {11,1,XT_CH_YELLOW,"Current Location:"},
+  {12,1,XT_CH_WHITE,"Number of records at "},
+  {14,1,XT_CH_WHITE,"Press F5 to add something to this location"},
+  {16,1,XT_CH_WHITE,"Press F6 to view everything at this location"},
+  {18,1,XT_CH_WHITE,"Enter \"open filename\" to have a record be opened"},
+  {21,1,XT_CH_RED,"Press F9 to quit the program"},
+  {22,1,XT_CH_CYAN,"------------------------------------------------------------------------------"},
+  {23,62,XT_CH_WHITE,"Enter Command"}
 };
-int nTS = sizeof(TS)/sizeof(TS[0]);
+int nMS = sizeof(MS)/sizeof(MS[0]);
 
-struct StringPosition SP[] = {
-	{4,10,70,"message"},
-	{7,20,3,"nitems"},
-	{8,20,20,"first-record"},
-	{9,20,20,"last-record"},
-	{10,9,30,"author"},
-	{11,10,10,"version"},
-	{14,11,3,"record-num"},
-	{15,7,20,"time"},
-	{16,10,30,"subject"},
-	{17,7,140,"body"},
-	{21,11,30,"edit-subject"},
-	{22,11,140,"edit-body"}
+struct StringPosition MSP[] = {
+  {2,10,70,"message"},
+  {4,9,40,"status"},
+  {5,21,30,"nitems"},
+  {6,9,30,"author"},
+  {7,10,10,"version"},
+  {8,20,20,"firstrecord"},
+  {9,20,20,"lastrecord"},
+  {11,20,20,"location"},
+  {23,1,40,"command"}
 };
-int nSP = sizeof(SP)/sizeof(SP[0]);
+int nMSP = sizeof(MSP)/sizeof(MSP[0]);
 
 int nitems = 0;
 char subject[31];
 char body[141];
 char errmsg[80] = "";
 
-
-// ------------------------------------------------ main --------------------
-int main(void) {
-	int i, c;
-	
-	fill(subject,30);
-	fill(body,140);
-	
-	xt_par0(XT_CLEAR_SCREEN);
-	
-	
-	// display template
- 	for (i = 0; i < nTS; ++i) {
-		xt_par2(XT_SET_ROW_COL_POS,TS[i].row,TS[i].col);
-		xt_par0(XT_CH_DEFAULT);
-		xt_par0(TS[i].color);
-		printf("%s",TS[i].string);
-	}
-	
-	DisplayStat();
-	while (TRUE) {
-		while ((c = getkey()) == KEY_NOTHING) ;
-		if (c == KEY_F9)  {
-			xt_par0(XT_CLEAR_SCREEN);
-			xt_par0(XT_CH_NORMAL);
-			xt_par2(XT_SET_ROW_COL_POS,1,1);
-			getkey_terminate();
-			exit(0);
-		}
-	}
-	
-}
-
-// ------------------------------------ fill --------------------------------
-void fill(char *s, int n) {
-	while (n--) *s++=' ';
-	*s='\0';
-}
-
-// ------------------------------------------------ DisplayStat --------------
-void DisplayStat(void) {
-	ReadMystoreFromChild("stat",NULL,NULL,NULL);
-	ParseInput(input,n_input);
-	SearchDisplay("nitems","nitems",XT_CH_WHITE);
-	SearchDisplay("first-record","first-time",XT_CH_WHITE);
-	SearchDisplay("last-record","last-time",XT_CH_WHITE);
-	SearchDisplay("author","author",XT_CH_WHITE);
-	SearchDisplay("version","version",XT_CH_WHITE);
-	fflush(stdout);
-	//SearchDisplay("message",errmsg,XT_CH_RED);
-}
-
-// --------------------------- Display -----------------------------------
-void SearchDisplay(char *prompt, char *name, char *color) {
+void SearchMenu(char *prompt, char *name, char *color) {
 	int loc, col, i, j;
 	int instring = TRUE;
 	char *value;
 	
 	// search for location
-	loc = FindStringPosition(prompt);
-	col = SP[loc].col;
+	loc = FindMenuStringPosition(prompt);
+	col = MSP[loc].col;
 	
 	// search for value
 	value = "";
@@ -121,8 +62,34 @@ void SearchDisplay(char *prompt, char *name, char *color) {
 		}
 	}
 	
-	DisplayAt(SP[loc].row,SP[loc].col,XT_CH_WHITE,SP[loc].length,value);
+	DisplayAt(MSP[loc].row,MSP[loc].col,XT_CH_WHITE,MSP[loc].length,value);
 }
+
+void DisplayMenu(void) {
+	ReadMystoreFromChild("stat",NULL,NULL,NULL);
+	ParseInput(input,n_input);
+	SearchMenu("message","message",XT_CH_WHITE);
+	SearchMenu("status","status",XT_CH_WHITE);
+	SearchMenu("nitems","nitems",XT_CH_WHITE);
+	SearchMenu("author","author",XT_CH_WHITE);
+	SearchMenu("version","version",XT_CH_WHITE);
+	SearchMenu("firstrecord","first-time",XT_CH_WHITE);
+	SearchMenu("lastrecord","last-time",XT_CH_WHITE);
+	SearchMenu("location","Home",XT_CH_WHITE);
+}
+
+
+int FindMenuStringPosition(char *prompt) {
+	int i;
+	
+	for (i = 0; i < nMSP; ++i) {
+		if (strcmp(prompt,MSP[i].name) == 0)
+			return i;
+	}
+	return 0;
+}
+
+//====================================End Menu==============================
 
 // ------------------------------------- DisplayAt -------------------------
 void DisplayAt(int row, int col, char *color, int maxlength, char *value) {
@@ -142,13 +109,42 @@ void DisplayAt(int row, int col, char *color, int maxlength, char *value) {
 	fflush(stdout);
 }
 
-// ---------------------------------- 	FindStringPosition ----------------
-int FindStringPosition(char *prompt) {
-	int i;
+
+// ------------------------------------ fill --------------------------------
+void fill(char *s, int n) {
+	while (n--) *s++=' ';
+	*s='\0';
+}
+
+// ------------------------------------------------ main --------------------
+int main(void) {
+	int i, c;
 	
-	for (i = 0; i < nSP; ++i) {
-		if (strcmp(prompt,SP[i].name) == 0)
-			return i;
+	fill(subject,30);
+	fill(body,140);
+	
+	xt_par0(XT_CLEAR_SCREEN);
+	
+	
+	// display Menu
+ 	for (i = 0; i < nMS; ++i) {
+		xt_par2(XT_SET_ROW_COL_POS,MS[i].row,MS[i].col);
+		xt_par0(XT_CH_DEFAULT);
+		xt_par0(MS[i].color);
+		printf("%s",MS[i].string);
 	}
-	return 0;
+	DisplayMenu();
+	xt_par2(XT_SET_ROW_COL_POS,23,1);
+
+	while (TRUE) {
+		while ((c = getkey()) == KEY_NOTHING) ;
+		if (c == KEY_F9)  {
+			xt_par0(XT_CLEAR_SCREEN);
+			xt_par0(XT_CH_NORMAL);
+			xt_par2(XT_SET_ROW_COL_POS,1,1);
+			getkey_terminate();
+			exit(0);
+		}
+	}
+	
 }
