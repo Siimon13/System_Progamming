@@ -32,6 +32,7 @@ struct StringPosition {
 // Prototypes -------------------------------------
 int ParseInput(char *in, int n_in);
 int ReadMystoreFromChild(char *argv1, char *argv2, char *argv3, char *argv4);
+int CheckMystore(char* sub);
 void DisplayStat(void);
 void fill(char *s, int n);
 void SearchDisplay(char *prompt, char *name, char *color);

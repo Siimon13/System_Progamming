@@ -1,13 +1,18 @@
-// mystore:  manages a linked-list database (called "mystore.dat") of little items
+/* mystore:  manages a linked-list database (called "mystore.dat") of little items
 
+V 0.92: fixes bug in month output
+V 0.90: implements edit
+
+*/
 /* Implements commands:
 	add
 	stat
 	display
 	delete
+	edit
 */
 
-#define version "0.85"
+#define version "0.92"
 #define author "PBrooks"
 
 #include <stdio.h>
@@ -18,13 +23,15 @@
 char *Usage = "Usage:\tmystore add \"subject\" \"body\"\n\
 	mystore stat\n\
 	mystore display {item-no}\n\
-	mystore delete {item-no}\n";
+	mystore delete {item-no}\n\
+	mystore edit {item-no} \"subject\" \"body\"\n";
 
 #define NOTHING		0
 #define ADD			1
 #define STAT		2
 #define DISPLAY		3
 #define DELETE		4
+#define EDIT		5
 
 #define TRUE	1
 #define FALSE	0
@@ -113,6 +120,14 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 	
+	if (command == EDIT && !edit(argv[2])) {
+		if (errmsg[0] != '\0')
+			printf("|status: ERROR: %s|\n", errmsg);
+		else
+			printf("|status: ERROR: cannot edit %s|\n",argv[2]);
+		return 1;
+	}
+	
 	if (rewrite)
 		if (!writeData()) {
 			if (errmsg[0] != '\0')
@@ -173,6 +188,20 @@ int parseArgs(int argc, char *argv[]) {
 			return FALSE;
 		}
 	}
+	// try the three-argument command: edit
+	else if (argc == 5) {
+		if (strcmp(argv[1], "edit") == 0 && isPositive(argv[2])) {
+			command = EDIT;
+			item_start = atoi(argv[2]);
+			subject = argv[3];
+			body = argv[4];
+			return TRUE;
+		}
+		else {
+			sprintf(errmsg, "Unrecognized 4-argument call: %s %s %s %s",argv[1],argv[2],argv[3],argv[4]);
+			return FALSE;
+		}
+	}
 	else
 		return FALSE;
 }
@@ -213,7 +242,7 @@ int readData(void) {
 		}
 		if ((current_carrier = calloc(1, sizeof(struct carrier))) == NULL) {  //allocate memory
 			fclose(fp);
-			sprintf(errmsg,"Cannot allocate %d\n",sizeof(struct carrier));
+			sprintf(errmsg,"Cannot allocate %zd\n",sizeof(struct carrier));
 			return FALSE;
 		}
 		current_carrier->theData = current_data;	// load the data into the carrier
@@ -239,7 +268,7 @@ int add(char *subject, char *body) {
 	strncpy(current_data.theSubject, subject, 30);
 	current_data.theSubject[30]='\0';
 	strncpy(current_data.theBody, body, 140);
-	current_data.theSubject[140] = '\0';
+	current_data.theBody[140] = '\0';
 	current_data.theTime = time(NULL);
 	
 	if ((current_carrier = calloc(1, sizeof(struct carrier))) == NULL) // allocate memory
@@ -260,6 +289,34 @@ int add(char *subject, char *body) {
 	return TRUE;
 }
 
+// ------------------------------------- edit ------------------------------------
+int edit(char *sn) {
+	int n = atoi(sn);
+	int i;
+	struct carrier *ptr;
+	struct data this_data;
+	
+	if (n > nitems) {
+		sprintf(errmsg, "Cannot edit item %d.  Item numbers range from 1 to %d",n,nitems);
+		return FALSE;
+	}
+	
+	for (i = 1, ptr = first; i < n; ++i)
+		ptr = ptr->next;
+	
+	this_data = ptr->theData;
+	strncpy(this_data.theSubject,subject,30);
+	this_data.theSubject[30] = '\0';
+	strncpy(this_data.theBody,body,140);
+	this_data.theBody[140] = '\0';
+	this_data.theTime = time(NULL);
+	ptr->theData = this_data;
+	
+	rewrite = TRUE;
+	printf("|status: OK|\n");
+	return TRUE;
+}
+	
 // ----------------------------------- writeData ---------------------------------
 int writeData(void) {
 	int i;
@@ -303,10 +360,10 @@ void stat(void) {
 	if (nitems == 0) return;
 	tp = localtime(&(first->theData.theTime));
 	printf("|first-time: %d-%02d-%02d %02d:%02d:%02d|\n",
-		tp->tm_year+1900,tp->tm_mon,tp->tm_mday,tp->tm_hour,tp->tm_min,tp->tm_sec);
+		tp->tm_year+1900,tp->tm_mon+1,tp->tm_mday,tp->tm_hour,tp->tm_min,tp->tm_sec);
 	tp = localtime(&(last->theData.theTime));
 	printf("|last-time: %d-%02d-%02d %02d:%02d:%02d|\n",
-		tp->tm_year+1900,tp->tm_mon,tp->tm_mday,tp->tm_hour,tp->tm_min,tp->tm_sec);
+		tp->tm_year+1900,tp->tm_mon+1,tp->tm_mday,tp->tm_hour,tp->tm_min,tp->tm_sec);
 
 	//printf("|first-time: %s|\n", rstrip(ctime(&(first->theData.theTime))));
 	//printf("|last-time: %s|\n", rstrip(ctime(&(last->theData.theTime))));
@@ -344,7 +401,7 @@ int display(char *sn) {
 	printf("|item: %d|\n",n);
 	tp = localtime(&this_data.theTime);
 	printf("|time: %d-%02d-%02d %02d:%02d:%02d|\n",
-		tp->tm_year+1900,tp->tm_mon,tp->tm_mday,tp->tm_hour,tp->tm_min,tp->tm_sec);
+		tp->tm_year+1900,tp->tm_mon+1,tp->tm_mday,tp->tm_hour,tp->tm_min,tp->tm_sec);
 	//printf("|time: %s|\n",rstrip(ctime(&this_data.theTime)));
 	printf("|subject: %s|\n",this_data.theSubject);
 	printf("|body: %s|\n",this_data.theBody);
